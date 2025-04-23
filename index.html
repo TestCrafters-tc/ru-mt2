@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RU Model Test-2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .exam-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .exam-container {
+  position: relative;
+  padding-top: 70px; /* Space for sticky bar */
+}
+
+/* iOS-style Sticky Bottom Timer */
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1000;
+  display: none; /* Hidden by default */
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 10px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-pill {
+  color: white !important; /* Force white text */
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(120, 120, 120, 0.3);
+}
+
+/* Container padding to prevent content hiding */
+.container {
+  padding-bottom: 80px;
+}
+
+/* iOS-style status icons */
+.status-bar i {
+  font-size: 14px;
+  opacity: 0.8;
+}
+.exam-submitted .status-bar {
+    display: none !important;
+}
+
+        .section-selection {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .section-option:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .section-option.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .section-option h3 {
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .section-option p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-card {
+            
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .subject-badge {
+            background: #e5e7eb;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .section-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        .points-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .option.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .option-letter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .result-card {
+            
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            scroll-margin-top: 80px; 
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .leaderboard-grid {
+            margin: 20px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            background: #f8fafc;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .leaderboard-entry {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            padding: 10px 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .leaderboard-entry.you {
+            background-color: #f0fdf4;
+            font-weight: bold;
+        }
+
+        .hidden-entry {
+            display: none;
+        }
+
+        .hidden-entry.show {
+            display: grid;
+        }
+
+        .toggle-button {
+            margin: 20px auto;
+            display: block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .validation-errors {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #dc2626;
+        }
+
+        .question-explanation {
+            
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 10px 15px;
+            margin-top: 15px;
+        }
+
+        .section-divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .section-divider h2 {
+            background: #f3f4f6;
+            display: inline-block;
+            padding: 0 20px;
+            color: #3b82f6;
+            font-size: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .correct-answer {
+            background-color: #dcfce7;
+            border-color: #10b981 !important;
+        }
+
+        .incorrect-answer {
+            background-color: #fee2e2;
+            border-color: #ef4444 !important;
+        }
+
+        .unselected-correct {
+            background-color: #f0fdf4;
+            border-color: #10b981 !important;
+        }
+
+        .mjx-chtml {
+            display: inline-block;
+            line-height: 1.2;
+        }
+        .MathJax {
+    outline: 0;
+}
+
+.MathJax_Display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 0;
+}
+
+mjx-container[jax="CHTML"] {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Ensure proper spacing around math elements */
+.question-text mjx-container, 
+.option-text mjx-container {
+    margin: 0 0.15em;
+}
+
+/* Review card specific styles */
+.review-card .question-text,
+.review-card .option-text {
+    white-space: normal;
+    word-wrap: break-word;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="exam-header">
+            <h1>RU Model Test-2</h1>
+            <p>Complete all required sections within the allocated time.</p>
+        </div>
+
+        <div class="section-selection" id="section-selection">
+            <h2>Select Your Exam Sections</h2>
+            <p>Section 1 (Physics, Chemistry, ICT) is mandatory. Choose one option from Sections 2-4:</p>
+            
+            <div class="section-option" style="opacity: 0.8; cursor: default;">
+                <h3>Section 1: Physics, Chemistry, ICT (Mandatory)</h3>
+                <p>55 questions: 25 Physics, 25 Chemistry, 5 ICT</p>
+            </div>
+            
+            <div class="section-option" data-section="math">
+                <h3>Section 2: Math</h3>
+                <p>25 questions</p>
+            </div>
+            
+            <div class="section-option" data-section="biology">
+                <h3>Section 3: Biology</h3>
+                <p>25 questions</p>
+            </div>
+            
+            <div class="section-option" data-section="math+biology">
+                <h3>Section 4: Math + Biology</h3>
+                <p>25 questions: 13 Biology, 12 Math</p>
+            </div>
+            
+            <button id="start-exam-btn" class="button" disabled>
+                Start Exam
+            </button>
+        </div>
+
+        <div class="exam-container">
+            <!-- Status bar (will be sticky) -->
+            <div class="status-bar" id="status-bar" style="display: none;">
+              <div class="status-pill">
+                <i class="fas fa-clock"></i> Time Left: <span id="time-left">45:00</span>
+              </div>
+              <div class="status-pill">
+                <i class="fas fa-pen"></i> Attempted: <span id="attempted-count">0</span>
+              </div>
+            </div>
+
+        <div id="generated-exam-container" style="display: none;">
+            <div id="questions-container"></div>
+            <button id="submit-btn" class="button" style="margin-top: 20px;">
+                Submit Exam
+            </button>
+        </div>
+    </div>
+ <!-- Load questions.js first -->
+ <script src="./questions.js"></script>
+ <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.promise.then(() => {
+            console.log('MathJax initial typesetting complete');
+          });
+        }
+      }
+    };
+  </script>
+    <script>
+        // Question pool with proper distribution for each section
+       // You can now access questionPool here
+       console.log(questionPool); // Just to verify
+        
+
+        let answers = {};
+        let timeLeft = 60 * 60; // 60minutes          
+        let examSubmitted = false;
+        let timer;
+        let examGenerated = false;
+        let selectedSection = null;
+
+        // Initialize all event listeners after window loads
+        function loadQuestions() {
+    return fetch('./questions.js')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load questions');
+        return response.text();
+      })
+      .then(scriptText => {
+        // Execute the script content
+        const script = document.createElement('script');
+        script.text = scriptText;
+        document.head.appendChild(script);
+        console.log('Questions loaded successfully');
+      })
+      .catch(error => {
+        console.error('Error loading questions:', error);
+        alert('Failed to load questions. Please check console for details.');
+      });
+  }
+        window.onload = function() {
+            // Attach click event to section options
+            document.querySelectorAll('.section-option[data-section]').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.section-option[data-section]').forEach(opt => 
+                        opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    selectedSection = this.dataset.section;
+                    
+                    // Enable start button
+                    document.getElementById('start-exam-btn').disabled = false;
+                });
+            });
+
+            // Add click event to start button
+            document.getElementById('start-exam-btn').addEventListener('click', startExam);
+
+            // Add click event to submit button
+            document.getElementById('submit-btn').addEventListener('click', submitExam);
+        };
+        
+
+        function getRandomQuestions(array, count) {
+    return array
+        .map(q => ({ sort: Math.random(), value: q }))
+        .sort((a, b) => a.sort - b.sort)
+        .slice(0, count)
+        .map(obj => obj.value);
+}
+
+function startExam() {
+    if (examGenerated || !selectedSection) return;
+
+    const questionsContainer = document.getElementById('questions-container');
+    questionsContainer.innerHTML = '';
+
+    let selectedQuestions = [];
+
+    // ---- Section 1: Mandatory ----
+    selectedQuestions.push(
+        ...getRandomQuestions(questionPool.Physics, 25).map(q => ({ ...q, section: 'Section 1' })),
+        ...getRandomQuestions(questionPool.Chemistry, 25).map(q => ({ ...q, section: 'Section 1' })),
+        ...getRandomQuestions(questionPool.ICT, 5).map(q => ({ ...q, section: 'Section 1' }))
+    );
+
+    // ---- Section 2/3/4: User-selected ----
+    if (selectedSection === 'math') {
+        selectedQuestions.push(
+            ...getRandomQuestions(questionPool.Math, 25).map(q => ({ ...q, section: 'Section 2' }))
+        );
+    } else if (selectedSection === 'biology') {
+        selectedQuestions.push(
+            ...getRandomQuestions(questionPool.Biology, 25).map(q => ({ ...q, section: 'Section 3' }))
+        );
+    } else if (selectedSection === 'math+biology') {
+        selectedQuestions.push(
+            ...getRandomQuestions(questionPool.Biology, 13).map(q => ({ ...q, section: 'Section 4' })),
+            ...getRandomQuestions(questionPool.Math, 12).map(q => ({ ...q, section: 'Section 4' }))
+        );
+    }
+
+    // ---- Optional: Shuffle final question list ----
+    selectedQuestions = getRandomQuestions(selectedQuestions, selectedQuestions.length);
+
+    // ---- Sort by section and subject for organized rendering ----
+    selectedQuestions.sort((a, b) => {
+        if (a.section !== b.section) {
+            return a.section.localeCompare(b.section);
+        }
+        return a.subject.localeCompare(b.subject);
+    });
+
+    // ---- Render questions ----
+    let currentSection = null;
+    selectedQuestions.forEach((question, index) => {
+        if (question.section !== currentSection) {
+            currentSection = question.section;
+            const divider = document.createElement('div');
+            divider.className = 'section-divider';
+            divider.innerHTML = `<h2>${currentSection}</h2>`;
+            questionsContainer.appendChild(divider);
+        }
+
+        const questionCard = createQuestionCard(question, index);
+        questionsContainer.appendChild(questionCard);
+    });
+
+    // ---- Update UI ----
+    document.getElementById('section-selection').style.display = 'none';
+    document.getElementById('status-bar').style.display = 'flex';
+    document.getElementById('generated-exam-container').style.display = 'block';
+
+    startTimer();
+    examGenerated = true;
+
+    if (window.MathJax) {
+        MathJax.typeset();
+    }
+}
+
+        function createQuestionCard(question, index) {
+            const questionCard = document.createElement('div');
+            questionCard.classList.add('question-card');
+            questionCard.dataset.subject = question.subject;
+            questionCard.dataset.section = question.section;
+            questionCard.dataset.correct = question.correctAnswer;
+            questionCard.dataset.explanation = question.explanation || '';
+
+            const questionHTML = `
+                <div class="question-header">
+                    <span class="question-number">Question ${index + 1}</span>
+                    <div>
+                        <span class="section-badge">${question.section}</span>
+                        <span class="subject-badge">${question.subject}</span>
+                        <span class="points-badge">1 point</span>
+                    </div>
+                </div>
+                <div class="question-text">${question.question}</div>
+                <div class="options">
+                    ${question.options.map((option, optIndex) => `
+                        <div class="option" data-question="${index + 1}" data-option="${optIndex}">
+                            <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+                            <span class="option-text">${option}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            questionCard.innerHTML = questionHTML;
+            
+            // Add click events to options
+            const optionElements = questionCard.querySelectorAll('.option');
+            optionElements.forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    const optionId = parseInt(this.dataset.option);
+                    selectOption(questionId, optionId);
+                });
+            });
+            
+            // Render MathJax after creating the card
+            if (window.MathJax) {
+                MathJax.typesetPromise([questionCard]).catch(err => console.log('MathJax typeset error:', err));
+            }
+            
+            return questionCard;
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timeDisplay = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('time-left').textContent = timeDisplay;
+
+            const timerElement = document.querySelector('.status-pill:nth-child(1)');
+            if (timeLeft < 300 && timerElement) {
+                timerElement.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+            }
+        }
+
+        function selectOption(questionId, optionIndex) {
+    if (examSubmitted || answers[questionId] !== undefined) return; // Prevent changes
+    
+    answers[questionId] = optionIndex; // Store answer
+    
+    // Disable all options for this question
+    const questionOptions = document.querySelectorAll(`[data-question="${questionId}"]`);
+    questionOptions.forEach(option => {
+        option.classList.remove('selected');
+        option.style.pointerEvents = 'none'; // Disable further clicks
+    });
+    
+    // Highlight selected option
+    const selectedOption = document.querySelector(`[data-question="${questionId}"][data-option="${optionIndex}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('selected');
+        selectedOption.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+            selectedOption.style.transform = 'scale(1)';
+        }, 200);
+    }
+    
+    updateAttemptedCount();
+}
+
+        function updateAttemptedCount() {
+            const attemptedCountElement = document.getElementById('attempted-count');
+            const count = Object.keys(answers).length;
+            attemptedCountElement.textContent = count;
+            
+            attemptedCountElement.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                attemptedCountElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function calculateScore() {
+            let totalScore = 0;
+            let correctAnswers = 0;
+            let wrongAnswers = 0;
+            let sectionStats = {};
+            let subjectStats = {};
+
+            const questionCards = document.querySelectorAll('.question-card');
+            
+            questionCards.forEach((card, index) => {
+                const questionId = index + 1;
+                const correctOption = parseInt(card.dataset.correct);
+                const selectedOption = answers[questionId];
+                const subject = card.dataset.subject;
+                const section = card.dataset.section;
+
+                // Initialize stats if not exists
+                if (!sectionStats[section]) {
+                    sectionStats[section] = {
+                        attempted: 0,
+                        correct: 0,
+                        incorrect: 0,
+                        unattempted: 0
+                    };
+                }
+                
+                if (!subjectStats[subject]) {
+                    subjectStats[subject] = {
+                        attempted: 0,
+                        correct: 0,
+                        incorrect: 0,
+                        unattempted: 0
+                    };
+                }
+
+                if (selectedOption === undefined) {
+                    sectionStats[section].unattempted++;
+                    subjectStats[subject].unattempted++;
+                } else if (selectedOption === correctOption) {
+                    totalScore += 1;
+                    correctAnswers++;
+                    sectionStats[section].attempted++;
+                    sectionStats[section].correct++;
+                    subjectStats[subject].attempted++;
+                    subjectStats[subject].correct++;
+                } else {
+                    totalScore -= 0.25;
+                    wrongAnswers++;
+                    sectionStats[section].attempted++;
+                    sectionStats[section].incorrect++;
+                    subjectStats[subject].attempted++;
+                    subjectStats[subject].incorrect++;
+                }
+            });
+
+            const totalQuestions = questionCards.length;
+            const unattempted = totalQuestions - (correctAnswers + wrongAnswers);
+            const accuracy = (correctAnswers + wrongAnswers) > 0 
+                ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100)
+                : 0;
+
+            return {
+                score: totalScore.toFixed(2),
+                totalQuestions,
+                correctAnswers,
+                wrongAnswers,
+                unattempted,
+                accuracy,
+                sectionStats,
+                subjectStats
+            };
+        }
+
+        function submitExam() {
+    clearInterval(timer);
+    examSubmitted = true;
+    // Hide the status bar
+    const statusBar = document.getElementById('status-bar');
+    if (statusBar) {
+        statusBar.style.display = 'none';
+    }
+    
+    const results = calculateScore();
+    
+    const container = document.getElementById('questions-container');
+    container.style.opacity = '0';
+
+    setTimeout(async () => {
+        container.innerHTML = createResultHTML(results);
+        container.style.opacity = '1';
+        
+        generateLeaderboard(parseFloat(results.score));
+        
+        // Process MathJax with proper error handling
+        try {
+            if (window.MathJax) {
+                console.log('Starting MathJax processing...');
+                await MathJax.typesetPromise();
+                console.log('MathJax processing complete');
+            }
+        } catch (err) {
+            console.error('MathJax processing error:', err);
+            // Fallback: Try to reload MathJax if first attempt fails
+            if (window.MathJax) {
+                try {
+                    await MathJax.startup.promise;
+                    await MathJax.typesetPromise();
+                } catch (err2) {
+                    console.error('MathJax fallback processing failed:', err2);
+                }
+            }
+        }
+
+        // Scroll to results after MathJax is done
+        const resultsSection = document.querySelector('.result-card');
+        if (resultsSection) {
+            resultsSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }, 500);
+
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+        submitBtn.style.display = 'none';
+    }
+}
+        function createResultHTML(results) {
+            return `
+                <div class="result-card">
+                    <h2><i class="fas fa-award"></i> Exam Results</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <p>Final Score</p>
+                            <h3>${results.score}</h3>
+                        </div>
+                        <div class="stat-box">
+                            <p>Time Taken</p>
+                            <h3>${formatTime((45 * 60) - timeLeft)}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <p><i class="fas fa-check-circle"></i> Correct Answers</p>
+                            <h3 style="color: #059669">${results.correctAnswers}</h3>
+                        </div>
+                        <div class="stat-box">
+                            <p><i class="fas fa-times-circle"></i> Wrong Answers</p>
+                            <h3 style="color: #dc2626">${results.wrongAnswers}</h3>
+                        </div>
+                        <div class="stat-box">
+                            <p><i class="fas fa-minus-circle"></i> Unattempted</p>
+                            <h3 style="color: #6b7280">${results.unattempted}</h3>
+                        </div>
+                        <div class="stat-box">
+                            <p><i class="fas fa-percentage"></i> Accuracy</p>
+                            <h3 style="color: #0891b2">${results.accuracy}%</h3>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;"><i class="fas fa-chart-bar"></i> Section Performance</h3>
+                    <div class="stats-grid">
+                        ${Object.entries(results.sectionStats).map(([section, stats]) => `
+                            <div class="stat-box">
+                                <p>${section}</p>
+                                <h3>${stats.correct}/${stats.attempted + stats.unattempted}</h3>
+                                <p style="font-size: 12px;">Correct: ${stats.correct}, Wrong: ${stats.incorrect}, Unattempted: ${stats.unattempted}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="leaderboard">
+                        <h3><i class="fas fa-trophy"></i> Leaderboard</h3>
+                        <div class="leaderboard-grid">
+                            <div class="leaderboard-header">
+                                <span>Rank</span>
+                                <span>Name</span>
+                                <span>Score</span>
+                            </div>
+                            <div class="leaderboard-entries" id="leaderboard-entries">
+                                <!-- Leaderboard entries will be dynamically inserted here -->
+                            </div>
+                        </div>
+                        <button id="toggle-button" class="toggle-button">Show More</button>
+                    </div>
+                    
+                    <div class="answer-review">
+                        <h3><i class="fas fa-list"></i> Answer Review</h3>
+                        ${generateAnswerReview()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateLeaderboard(studentScore) {
+            const leaderboardEntries = document.getElementById('leaderboard-entries');
+            if (!leaderboardEntries) return;
+            
+            leaderboardEntries.innerHTML = '';
+
+            const leaderboardData = [
+            { "name": "Eshan", "score": 28 },
+  
+  { "name": "Mehedi", "score": 78.75 },
+  { "name": "Dipa Chanda", "score": 78 },
+  { "name": "Kaniz Fatema Tamanna", "score": 77.75 },
+  { "name": "Rakib", "score": 77.75 },
+  { "name": "Mehedi Hasan Bappy", "score": 77.75 },
+  { "name": "Md.Rayhan", "score": 77.75 },
+  { "name": "Yeasin Sheikh", "score": 77.5 },
+  { "name": "Tisha Debnath", "score": 77.5 },
+  { "name": "Kazi melon", "score": 77.5 },
+  { "name": "Navid hasan", "score": 77.5 },
+  { "name": "Dipu Ghosh", "score": 77.25 },
+  { "name": "Adib", "score": 77 },
+  { "name": "Mariya Akter Orni", "score": 77 },
+  { "name": "MOHAJ MUHAMMAD", "score": 76.75 },
+  { "name": "Nazmus Sadat", "score": 76.75 },
+  { "name": "Nadia Afrin Saba", "score": 76.75 },
+  { "name": "Riya moni", "score": 76.75 },
+  { "name": "Anika Tabassum", "score": 76.75 },
+  { "name": "Disha", "score": 76.75 },
+  { "name": "Nabila Rahman", "score": 76.5 },
+  { "name": "Samia", "score": 66.5 },
+  { "name": "Mymona", "score": 76.5 },
+  { "name": "Razit", "score": 46.25 },
+  { "name": "Saimon", "score": 76.25 },
+  { "name": "Mimir Tahsan", "score": 76 },
+  { "name": "Siddika", "score": 76 },
+  { "name": "Md: Hanif", "score": 76 },
+  { "name": "Saigal Chowdhury", "score": 56.5 },
+  { "name": "Rakhi Saha", "score": 55.75 },
+  { "name": "Ratul Kazi", "score": 75.75 },
+  { "name": "Miraj", "score": 75.75 },
+  { "name": "Bristy", "score": 75.75 },
+  { "name": "Nafiza rahman", "score": 75.75 },
+  { "name": "Tanvir Ahmed", "score": 75.5 },
+  { "name": "Fahmida Islam", "score": 45.5 },
+  { "name": "Shayla Sabrin", "score": 75.5 },
+  { "name": "Lutfur Rahman", "score": 35.25 },
+  { "name": "Mahbuba Sultana Rimu", "score": 75 },
+  { "name": "Sumaiya Binte Shaheed", "score": 75 },
+  { "name": "Abdullah al mohit", "score": 74.75 },
+  { "name": "Afif", "score": 74.75 },
+  { "name": "Mahmud al sami", "score": 74.75 },
+  { "name": "Raihan Rocky", "score": 74.75 },
+  { "name": "NAZMUR RAHMAN MUGDHO", "score": 54.75 },
+  { "name": "Mahdi", "score": 74.75 },
+  { "name": "Mehrab Mahfuz Tanzil", "score": 64.75 },
+  { "name": "Munem Shahriar", "score": 70.5 },
+  { "name": "Sabina Akter Liya", "score": 74.75 },
+  { "name": "MOHAMMAD ALI", "score": 74.75 },
+  { "name": "Mst.Maria Sultana", "score": 74.75 },
+  { "name": "Aysha Siddika", "score": 74.5 },
+  { "name": "Apurba Mazumder", "score": 69.25 },
+  { "name": "Fighter", "score": 69.25 },
+  { "name": "Farzana Fifin", "score": 69.25 },
+  { "name": "AL IMRAN", "score": 69.25 },
+  { "name": "Masfika Akter", "score": 69.25 },
+  { "name": "Irin Nahar Moon", "score": 69.25 },
+  { "name": "Md.Robiul islam", "score": 69.25 },
+  { "name": "Nirob", "score": 69 },
+  { "name": "Sinthia lslam", "score": 69 },
+  { "name": "Farhan Ahmad", "score": 69 },
+  { "name": "Md. Nayem Bapary", "score": 69 },
+  { "name": "Arisha Tisha", "score": 69 },
+  { "name": "Reyad", "score": 69 },
+  { "name": "Sumaya Alam", "score": 69 },
+  { "name": "Emon Basar", "score": 67.75 },
+  { "name": "Sumaiya Akter Tinni", "score": 69 },
+  { "name": "Yousha", "score": 49 },
+  { "name": "Nusrat", "score": 69 },
+  { "name": "MJM", "score": 59 },
+  { "name": "Rashadul Islam", "score": 69 },
+  { "name": "Rahat", "score": 38.75 },
+  { "name": "Toha Mirza", "score": 68.75 },
+  { "name": "Rifa Tasnia Ohi", "score": 68.75 },
+  { "name": "Tohmina khatun", "score": 58.75 },
+  { "name": "shahadat hossain", "score": 68.75 },
+  { "name": "Ronjon", "score": 63.75 },
+  { "name": "Bivas Barman", "score": 68.75 },
+  { "name": "Mahmudul Hasan Khan Akib", "score": 68.75 },
+  { "name": "Jannat", "score": 68.75 },
+  { "name": "JA Niloy", "score": 68.75 },
+  { "name": "Rahul", "score": 68.75 },
+  { "name": "Ruhul", "score": 58.75 },
+  { "name": "Humira Kabir", "score": 67 },
+  { "name": "Al Amin Hossain", "score": 67 },
+  { "name": "Md.Nahid Mridha", "score": 67 },
+  { "name": "Hossain Abdullah", "score": 67 },
+  { "name": "Afia Mukarrama", "score": 67 },
+  { "name": "Yousuf Rimon", "score": 67 },
+  { "name": "Raihan", "score": 67 },
+  { "name": "Chaity Chakrabarty", "score": 67 },
+  { "name": "Jahid hasan", "score": 67 },
+  { "name": "Arpita Roy", "score": 67 },
+  { "name": "Md Hasanuzzaman", "score": 67 },
+  { "name": "Fahim", "score": 67 },
+  { "name": "N S", "score": 66.75 },
+  { "name": "Any Akther", "score": 66.75 },
+  { "name": "Zohana Ibnath", "score": 66.75 },
+  { "name": "Mim Akter", "score": 66.75 },
+  { "name": "Noor Aznin", "score": 66.75 },
+  { "name": "Susmi Akter", "score": 66.75 },
+  { "name": "Fawzia afifa Riya", "score": 66.75 },
+  { "name": "Noman", "score": 66.75 },
+  { "name": "Nadia khanam", "score": 66.75 },
+  { "name": "Erin jahan juthi", "score": 66.75 },
+  { "name": "Rokibul Hasan Rimon", "score": 66.75 },
+  { "name": "Mim", "score": 66.75 },
+  { "name": "Tonima Akter Emo", "score": 66.75 },
+  { "name": "Payel", "score": 66.75 },
+  { "name": "Sumaya tonny", "score": 66.75 },
+  { "name": "Shakila Ahammed Antora", "score": 56.75 },
+  { "name": "Karim Rahim", "score": 66.75 },
+  { "name": "Tanvir Ahamed", "score": 66.75 },
+  { "name": "Sami", "score": 59.75 },
+  { "name": "Susmi Akter", "score": 6.75 },
+  { "name": "Fawzia afifa Riya", "score": 36.75 },
+  { "name": "Noman", "score": 25.75 },
+  { "name": "Nadia khanam", "score": 66.5 },
+  { "name": "Erin jahan juthi", "score": 56.75 },
+  { "name": "Rokibul Hasan Rimon", "score": 46.75 },
+  { "name": "Mim", "score": 66.75 },
+  { "name": "Tonima Akter Emo", "score": 66.75 },
+  { "name": "Payel", "score": 66.75 },
+  { "name": "Sumaya tonny", "score": 46.75 },
+  { "name": "Shakila Ahammed Antora", "score": 66.75 },
+  { "name": "Karim Rahim", "score": 66.75 },
+  { "name": "Tanvir Ahamed", "score": 66.75 },
+  { "name": "Sami", "score": 66.75 },
+            ];
+
+            leaderboardData.push({ name: "You", score: studentScore });
+            leaderboardData.sort((a, b) => b.score - a.score);
+
+            leaderboardData.forEach((entry, index) => {
+                const div = document.createElement('div');
+                div.classList.add('leaderboard-entry');
+                if (index >= 3) div.classList.add('hidden-entry');
+                if (entry.name === "You") div.classList.add('you');
+
+                div.innerHTML = `
+                    <span>${index + 1}</span>
+                    <span>${entry.name}</span>
+                    <span>${entry.score}</span>
+                `;
+                leaderboardEntries.appendChild(div);
+            });
+
+            const toggleButton = document.getElementById('toggle-button');
+    if (toggleButton) {
+        toggleButton.style.display = leaderboardData.length > 3 ? 'block' : 'none';
+        toggleButton.addEventListener('click', toggleLeaderboard); // Add this line
+    }
+        }
+
+        function toggleLeaderboard() {
+            const hiddenEntries = document.querySelectorAll('.hidden-entry');
+            const toggleButton = document.getElementById('toggle-button');
+            
+            hiddenEntries.forEach(entry => {
+                entry.classList.toggle('show');
+            });
+            
+            if (toggleButton) {
+                const isExpanded = hiddenEntries[0]?.classList.contains('show');
+                toggleButton.textContent = isExpanded ? 'Show Less' : 'Show More';
+            }
+            
+            
+        }
+
+        function generateAnswerReview() {
+            let reviewHTML = '';
+            const questionCards = document.querySelectorAll('.question-card');
+            questionCards.forEach((card, index) => {
+                const questionId = index + 1;
+                const correctOptionIndex = parseInt(card.dataset.correct, 10); // Get the correct option index
+                const selectedOption = card.querySelector('.option.selected');
+                const selectedOptionIndex = selectedOption ? parseInt(selectedOption.dataset.option, 10) : null;
+
+                reviewHTML += `
+                    <div class="question-card ${selectedOptionIndex === correctOptionIndex ? 'correct' : 'incorrect'}">
+                        <div class="question-header">
+                            <span class="question-number">Question ${questionId}</span>
+                            <span class="result-icon">
+                                ${selectedOptionIndex === correctOptionIndex 
+                                    ? '<i class="fas fa-check-circle" style="color: #059669"></i>' 
+                                    : '<i class="fas fa-times-circle" style="color: #dc2626"></i>'}
+                            </span>
+                        </div>
+                        <div class="question-text">${card.querySelector('.question-text').innerHTML}</div>
+                        <div class="options">
+                            ${Array.from(card.querySelectorAll('.option')).map((option, optIndex) => `
+                                <div class="option ${optIndex === correctOptionIndex ? 'correct' : optIndex === selectedOptionIndex ? 'incorrect' : ''}">
+                                    <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+                                    <span class="option-text">${option.querySelector('.option-text').innerHTML}</span>
+                                    ${optIndex === correctOptionIndex 
+                                        ? '<i class="fas fa-check" style="color: #059669"></i>' 
+                                        : optIndex === selectedOptionIndex 
+                                            ? '<i class="fas fa-times" style="color: #dc2626"></i>' 
+                                            : ''} 
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="question-explanation">
+                            <strong>Explanation:</strong> ${card.dataset.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+            return reviewHTML;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}m ${secs}s`;
+        }
+    </script>
+</body>
+</html>
