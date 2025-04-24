@@ -335,21 +335,150 @@
             color: #dc2626;
         }
 
-        .question-explanation {
-            
-            background: #f0fdf4;
-            border-left: 4px solid #10b981;
-            
-            width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 15px;
-           
-            min-width: 100px; /* ensures horizontal scroll for small screens */
+     /* Modern Scrollable Explanation Container */
+.explanation-content {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  background: rgba(173, 220, 234, 0.95);
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
+}
 
-           
+.explanation-content.active {
+  padding: 16px;
+  max-height: 60vh; /* 60% of viewport height */
+  overflow-x: auto;
+  overflow-y: auto;
   
-        }
+  /* Hide scrollbar completely */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome/Safari */
+.explanation-content.active::-webkit-scrollbar {
+  display: none;
+}
+
+/* Visual scroll hint (only appears when content is scrollable) */
+.explanation-content.active:after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to top, 
+    rgba(248,250,252,0.9) 0%, 
+    rgba(248,250,252,0) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.explanation-content.active.scrollable:after {
+  opacity: 1;
+}
+
+/* Math content adjustments */
+.explanation-content mjx-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; /* Breathing room */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .explanation-content.active {
+    max-height: 50vh;
+    padding: 12px 14px;
+  }
+}
+/* Modern Explanation Toggle Button */
+.toggle-explanation {
+  width: 100%;
+  background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #065f46;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.toggle-explanation::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.toggle-explanation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.toggle-explanation.active {
+  background: linear-gradient(135deg, #e6f7ed 0%, #d1f2e5 100%);
+}
+
+.toggle-explanation.active::after {
+  transform: scaleX(1);
+}
+
+.toggle-explanation i {
+  color: #059669;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  font-size: 14px;
+}
+
+.toggle-explanation.active i {
+  transform: rotate(180deg);
+  color: #047857;
+}
+
+.toggle-explanation span {
+  margin-left: 12px;
+  flex-grow: 1;
+}
+
+/* Pulse animation when first rendered */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.toggle-explanation.new {
+  animation: pulse-glow 2.5s ease-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .toggle-explanation {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+  
+  .toggle-explanation i {
+    font-size: 13px;
+  }
+}
 
         .section-divider {
             text-align: center;
@@ -397,25 +526,43 @@
             display: inline-block;
             line-height: 1.2;
         }
-        .MathJax {
-    outline: 0;
+       /* MathJax Inline Formatting */
+.MathJax, .MJXc-display, mjx-container {
+  display: inline !important;
+  white-space: normal !important;
 }
 
-.MathJax_Display {
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 5px 0;
+/* Prevent formula overflow */
+mjx-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
 }
 
-mjx-container[jax="CHTML"] {
-    display: inline-block;
-    vertical-align: middle;
+/* Formula text sizing */
+.MathJax {
+  font-size: inherit !important;
 }
 
-/* Ensure proper spacing around math elements */
-.question-text mjx-container, 
-.option-text mjx-container {
-    margin: 0 0.15em;
+/* Inline formula spacing */
+.MJXc-display {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline !important;
+}
+
+/* Mobile formula adjustments */
+@media (max-width: 768px) {
+  mjx-container {
+    font-size: 95% !important;
+  }
+  
+  .MathJax {
+    word-wrap: break-word;
+  }
 }
 
 /* Review card specific styles */
@@ -423,6 +570,51 @@ mjx-container[jax="CHTML"] {
 .review-card .option-text {
     white-space: normal;
     word-wrap: break-word;
+}
+.review-section {
+    margin: 30px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.review-section-header {
+    padding: 15px 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-section-header i {
+    font-size: 20px;
+}
+
+.review-section-content {
+    background: white;
+    padding: 20px;
+}
+
+.correct-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.incorrect-header {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.skipped-header {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.review-count {
+    margin-left: auto;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 14px;
 }
     </style>
 </head>
@@ -523,6 +715,60 @@ mjx-container[jax="CHTML"] {
         };
         document.head.appendChild(script);
     });
+   // Toggle Explanations - Fixed Version
+document.addEventListener('click', function(e) {
+  const toggleBtn = e.target.closest('.toggle-explanation');
+  
+  if (toggleBtn) {
+    // Find the closest parent explanation container
+    const explanationContainer = toggleBtn.closest('.question-explanation');
+    const content = explanationContainer.querySelector('.explanation-content');
+    const icon = toggleBtn.querySelector('i');
+    const textSpan = toggleBtn.querySelector('span');
+    
+    // Toggle classes
+    toggleBtn.classList.toggle('active');
+    content.classList.toggle('active');
+    
+    // Update text
+    if (content.classList.contains('active')) {
+      textSpan.textContent = 'Hide Explanation';
+      // Ensure MathJax renders when shown
+      if (window.MathJax) {
+        MathJax.typesetPromise([content]).catch(err => console.log('MathJax typeset error:', err));
+      }
+    } else {
+      textSpan.textContent = 'Show Explanation';
+    }
+  }
+  // Detect if content is scrollable and add visual cue
+function checkScrollability() {
+  document.querySelectorAll('.explanation-content.active').forEach(content => {
+    const isScrollable = content.scrollHeight > content.clientHeight;
+    content.classList.toggle('scrollable', isScrollable);
+  });
+}
+
+// Run on toggle and window resize
+document.addEventListener('click', function(e) {
+  const toggleBtn = e.target.closest('.toggle-explanation');
+  if (toggleBtn) {
+    setTimeout(checkScrollability, 450); // After animation completes
+  }
+});
+
+window.addEventListener('resize', checkScrollability);
+
+// Initial check when explanations load
+checkScrollability();
+});
+
+// Initialize all explanations as collapsed on page load
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.explanation-content').forEach(content => {
+    content.classList.remove('active');
+  });
+});
 
     function initializeExam() {
         // All your existing initialization code that was in window.onload
@@ -1203,46 +1449,114 @@ mjx-container[jax="CHTML"] {
         }
 
         function generateAnswerReview() {
-            let reviewHTML = '';
-            const questionCards = document.querySelectorAll('.question-card');
-            questionCards.forEach((card, index) => {
-                const questionId = index + 1;
-                const correctOptionIndex = parseInt(card.dataset.correct, 10); // Get the correct option index
-                const selectedOption = card.querySelector('.option.selected');
-                const selectedOptionIndex = selectedOption ? parseInt(selectedOption.dataset.option, 10) : null;
+    // Create containers for each type
+    const correctAnswers = [];
+    const incorrectAnswers = [];
+    const skippedAnswers = [];
 
-                reviewHTML += `
-                    <div class="question-card ${selectedOptionIndex === correctOptionIndex ? 'correct' : 'incorrect'}">
-                        <div class="question-header">
-                            <span class="question-number">Question ${questionId}</span>
-                            <span class="result-icon">
-                                ${selectedOptionIndex === correctOptionIndex 
-                                    ? '<i class="fas fa-check-circle" style="color: #059669"></i>' 
-                                    : '<i class="fas fa-times-circle" style="color: #dc2626"></i>'}
-                            </span>
+    const questionCards = document.querySelectorAll('.question-card');
+    
+    questionCards.forEach((card, index) => {
+        const questionId = index + 1;
+        const correctOptionIndex = parseInt(card.dataset.correct, 10);
+        const selectedOption = card.querySelector('.option.selected');
+        const selectedOptionIndex = selectedOption ? parseInt(selectedOption.dataset.option, 10) : null;
+        
+        const questionHTML = `
+            <div class="question-card">
+                <div class="question-header">
+                    <span class="question-number">Question ${questionId}</span>
+                    <span class="result-icon">
+                        ${selectedOptionIndex === correctOptionIndex 
+                            ? '<i class="fas fa-check-circle" style="color: #059669"></i>' 
+                            : selectedOptionIndex !== null
+                                ? '<i class="fas fa-times-circle" style="color: #dc2626"></i>'
+                                : '<i class="fas fa-minus-circle" style="color: #6b7280"></i>'}
+                    </span>
+                </div>
+                <div class="question-text">${card.querySelector('.question-text').innerHTML}</div>
+                <div class="options">
+                    ${Array.from(card.querySelectorAll('.option')).map((option, optIndex) => `
+                        <div class="option ${optIndex === correctOptionIndex ? 'correct-answer' : ''} 
+                                        ${optIndex === selectedOptionIndex && optIndex !== correctOptionIndex ? 'incorrect-answer' : ''}
+                                        ${selectedOptionIndex === null && optIndex === correctOptionIndex ? 'unselected-correct' : ''}">
+                            <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+                            <span class="option-text">${option.querySelector('.option-text').innerHTML}</span>
+                            ${optIndex === correctOptionIndex 
+                                ? '<i class="fas fa-check" style="color: #059669"></i>' 
+                                : optIndex === selectedOptionIndex && optIndex !== correctOptionIndex
+                                    ? '<i class="fas fa-times" style="color: #dc2626"></i>' 
+                                    : ''} 
                         </div>
-                        <div class="question-text">${card.querySelector('.question-text').innerHTML}</div>
-                        <div class="options">
-                            ${Array.from(card.querySelectorAll('.option')).map((option, optIndex) => `
-                                <div class="option ${optIndex === correctOptionIndex ? 'correct' : optIndex === selectedOptionIndex ? 'incorrect' : ''}">
-                                    <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
-                                    <span class="option-text">${option.querySelector('.option-text').innerHTML}</span>
-                                    ${optIndex === correctOptionIndex 
-                                        ? '<i class="fas fa-check" style="color: #059669"></i>' 
-                                        : optIndex === selectedOptionIndex 
-                                            ? '<i class="fas fa-times" style="color: #dc2626"></i>' 
-                                            : ''} 
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="question-explanation">
-                            <strong>Explanation:</strong> ${card.dataset.explanation}
-                        </div>
-                    </div>
-                `;
-            });
-            return reviewHTML;
+                    `).join('')}
+                </div>
+                <div class="question-explanation">
+  <button class="toggle-explanation new">
+    <i class="fas fa-chevron-down"></i>
+    <span>Show Explanation</span>
+    <div class="button-hover-effect"></div>
+  </button>
+  <div class="explanation-content hidden">
+    ${card.dataset.explanation}
+  </div>
+</div>
+            </div>
+        `;
+        
+        // Categorize the question
+        if (selectedOptionIndex === correctOptionIndex) {
+            correctAnswers.push(questionHTML);
+        } else if (selectedOptionIndex !== null) {
+            incorrectAnswers.push(questionHTML);
+        } else {
+            skippedAnswers.push(questionHTML);
         }
+    });
+    
+    // Create the review sections HTML
+    return `
+        <div class="review-sections">
+            ${correctAnswers.length > 0 ? `
+                <div class="review-section">
+                    <div class="review-section-header correct-header">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Correct Answers</span>
+                        <span class="review-count">${correctAnswers.length}</span>
+                    </div>
+                    <div class="review-section-content">
+                        ${correctAnswers.join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${incorrectAnswers.length > 0 ? `
+                <div class="review-section">
+                    <div class="review-section-header incorrect-header">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Incorrect Answers</span>
+                        <span class="review-count">${incorrectAnswers.length}</span>
+                    </div>
+                    <div class="review-section-content">
+                        ${incorrectAnswers.join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${skippedAnswers.length > 0 ? `
+                <div class="review-section">
+                    <div class="review-section-header skipped-header">
+                        <i class="fas fa-minus-circle"></i>
+                        <span>Skipped Questions</span>
+                        <span class="review-count">${skippedAnswers.length}</span>
+                    </div>
+                    <div class="review-section-content">
+                        ${skippedAnswers.join('')}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
