@@ -424,52 +424,6 @@ mjx-container[jax="CHTML"] {
     white-space: normal;
     word-wrap: break-word;
 }
-/* Add to your existing CSS */
-.review-section {
-    margin: 30px 0;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.review-section-header {
-    padding: 15px 20px;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.review-section-header i {
-    font-size: 20px;
-}
-
-.review-section-content {
-    background: white;
-    padding: 20px;
-}
-
-.correct-header {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.incorrect-header {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.skipped-header {
-    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-}
-
-.review-count {
-    margin-left: auto;
-    background: rgba(255,255,255,0.2);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 14px;
-}
     </style>
 </head>
 <body>
@@ -848,7 +802,7 @@ mjx-container[jax="CHTML"] {
             sectionStats[section].unattempted++;
             subjectStats[subject].unattempted++;
         } else if (selectedOption === correctOption) {
-            totalScore += 1.25;
+            totalScore += 1;
             correctAnswers++;
             sectionStats[section].correct++;
             subjectStats[subject].correct++;
@@ -1214,107 +1168,47 @@ mjx-container[jax="CHTML"] {
         }
 
         function generateAnswerReview() {
-    // Create containers for each type
-    const correctAnswers = [];
-    const incorrectAnswers = [];
-    const skippedAnswers = [];
+            let reviewHTML = '';
+            const questionCards = document.querySelectorAll('.question-card');
+            questionCards.forEach((card, index) => {
+                const questionId = index + 1;
+                const correctOptionIndex = parseInt(card.dataset.correct, 10); // Get the correct option index
+                const selectedOption = card.querySelector('.option.selected');
+                const selectedOptionIndex = selectedOption ? parseInt(selectedOption.dataset.option, 10) : null;
 
-    const questionCards = document.querySelectorAll('.question-card');
-    
-    questionCards.forEach((card, index) => {
-        const questionId = index + 1;
-        const correctOptionIndex = parseInt(card.dataset.correct, 10);
-        const selectedOption = card.querySelector('.option.selected');
-        const selectedOptionIndex = selectedOption ? parseInt(selectedOption.dataset.option, 10) : null;
-        
-        const questionHTML = `
-            <div class="question-card">
-                <div class="question-header">
-                    <span class="question-number">Question ${questionId}</span>
-                    <span class="result-icon">
-                        ${selectedOptionIndex === correctOptionIndex 
-                            ? '<i class="fas fa-check-circle" style="color: #059669"></i>' 
-                            : selectedOptionIndex !== null
-                                ? '<i class="fas fa-times-circle" style="color: #dc2626"></i>'
-                                : '<i class="fas fa-minus-circle" style="color: #6b7280"></i>'}
-                    </span>
-                </div>
-                <div class="question-text">${card.querySelector('.question-text').innerHTML}</div>
-                <div class="options">
-                    ${Array.from(card.querySelectorAll('.option')).map((option, optIndex) => `
-                        <div class="option ${optIndex === correctOptionIndex ? 'correct-answer' : ''} 
-                                        ${optIndex === selectedOptionIndex && optIndex !== correctOptionIndex ? 'incorrect-answer' : ''}
-                                        ${selectedOptionIndex === null && optIndex === correctOptionIndex ? 'unselected-correct' : ''}">
-                            <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
-                            <span class="option-text">${option.querySelector('.option-text').innerHTML}</span>
-                            ${optIndex === correctOptionIndex 
-                                ? '<i class="fas fa-check" style="color: #059669"></i>' 
-                                : optIndex === selectedOptionIndex && optIndex !== correctOptionIndex
-                                    ? '<i class="fas fa-times" style="color: #dc2626"></i>' 
-                                    : ''} 
+                reviewHTML += `
+                    <div class="question-card ${selectedOptionIndex === correctOptionIndex ? 'correct' : 'incorrect'}">
+                        <div class="question-header">
+                            <span class="question-number">Question ${questionId}</span>
+                            <span class="result-icon">
+                                ${selectedOptionIndex === correctOptionIndex 
+                                    ? '<i class="fas fa-check-circle" style="color: #059669"></i>' 
+                                    : '<i class="fas fa-times-circle" style="color: #dc2626"></i>'}
+                            </span>
                         </div>
-                    `).join('')}
-                </div>
-                <div class="question-explanation">
-                    <strong>Explanation:</strong> ${card.dataset.explanation}
-                </div>
-            </div>
-        `;
-        
-        // Categorize the question
-        if (selectedOptionIndex === correctOptionIndex) {
-            correctAnswers.push(questionHTML);
-        } else if (selectedOptionIndex !== null) {
-            incorrectAnswers.push(questionHTML);
-        } else {
-            skippedAnswers.push(questionHTML);
+                        <div class="question-text">${card.querySelector('.question-text').innerHTML}</div>
+                        <div class="options">
+                            ${Array.from(card.querySelectorAll('.option')).map((option, optIndex) => `
+                                <div class="option ${optIndex === correctOptionIndex ? 'correct' : optIndex === selectedOptionIndex ? 'incorrect' : ''}">
+                                    <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+                                    <span class="option-text">${option.querySelector('.option-text').innerHTML}</span>
+                                    ${optIndex === correctOptionIndex 
+                                        ? '<i class="fas fa-check" style="color: #059669"></i>' 
+                                        : optIndex === selectedOptionIndex 
+                                            ? '<i class="fas fa-times" style="color: #dc2626"></i>' 
+                                            : ''} 
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="question-explanation">
+                            <strong>Explanation:</strong> ${card.dataset.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+            return reviewHTML;
         }
-    });
-    
-    // Create the review sections HTML
-    return `
-        <div class="review-sections">
-            ${correctAnswers.length > 0 ? `
-                <div class="review-section">
-                    <div class="review-section-header correct-header">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Correct Answers</span>
-                        <span class="review-count">${correctAnswers.length}</span>
-                    </div>
-                    <div class="review-section-content">
-                        ${correctAnswers.join('')}
-                    </div>
-                </div>
-            ` : ''}
-            
-            ${incorrectAnswers.length > 0 ? `
-                <div class="review-section">
-                    <div class="review-section-header incorrect-header">
-                        <i class="fas fa-times-circle"></i>
-                        <span>Incorrect Answers</span>
-                        <span class="review-count">${incorrectAnswers.length}</span>
-                    </div>
-                    <div class="review-section-content">
-                        ${incorrectAnswers.join('')}
-                    </div>
-                </div>
-            ` : ''}
-            
-            ${skippedAnswers.length > 0 ? `
-                <div class="review-section">
-                    <div class="review-section-header skipped-header">
-                        <i class="fas fa-minus-circle"></i>
-                        <span>Skipped Questions</span>
-                        <span class="review-count">${skippedAnswers.length}</span>
-                    </div>
-                    <div class="review-section-content">
-                        ${skippedAnswers.join('')}
-                    </div>
-                </div>
-            ` : ''}
-        </div>
-    `;
-}
+
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
