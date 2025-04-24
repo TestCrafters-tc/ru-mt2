@@ -339,8 +339,16 @@
             
             background: #f0fdf4;
             border-left: 4px solid #10b981;
-            padding: 10px 15px;
-            margin-top: 15px;
+            
+            width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 15px;
+           
+            min-width: 100px; /* ensures horizontal scroll for small screens */
+
+           
+  
         }
 
         .section-divider {
@@ -562,75 +570,86 @@ mjx-container[jax="CHTML"] {
         .map(obj => obj.value);
 }
 
-function startExam() {
-    if (examGenerated || !selectedSection) return;
+ // Start the exam
+ function startExam() {
+        if (examGenerated || !selectedSection) return;
 
-    const questionsContainer = document.getElementById('questions-container');
-    questionsContainer.innerHTML = '';
+        // Show loading state
+        const startBtn = document.getElementById('start-exam-btn');
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Exam...';
 
-    let selectedQuestions = [];
+        // Use setTimeout to allow UI to update before heavy processing
+        setTimeout(() => {
+            try {
+                const questionsContainer = document.getElementById('questions-container');
+                questionsContainer.innerHTML = '';
 
-    // ---- Section 1: Mandatory ----
-    selectedQuestions.push(
-        ...getRandomQuestions(questionPool.Physics, 25).map(q => ({ ...q, section: 'Section 1' })),
-        ...getRandomQuestions(questionPool.Chemistry, 25).map(q => ({ ...q, section: 'Section 1' })),
-        ...getRandomQuestions(questionPool.ICT, 5).map(q => ({ ...q, section: 'Section 1' }))
-    );
+                let selectedQuestions = [];
 
-    // ---- Section 2/3/4: User-selected ----
-    if (selectedSection === 'math') {
-        selectedQuestions.push(
-            ...getRandomQuestions(questionPool.Math, 25).map(q => ({ ...q, section: 'Section 2' }))
-        );
-    } else if (selectedSection === 'biology') {
-        selectedQuestions.push(
-            ...getRandomQuestions(questionPool.Biology, 25).map(q => ({ ...q, section: 'Section 3' }))
-        );
-    } else if (selectedSection === 'math+biology') {
-        selectedQuestions.push(
-            ...getRandomQuestions(questionPool.Biology, 13).map(q => ({ ...q, section: 'Section 4' })),
-            ...getRandomQuestions(questionPool.Math, 12).map(q => ({ ...q, section: 'Section 4' }))
-        );
+                // Section 1: Mandatory
+                selectedQuestions.push(
+                    ...getRandomQuestions(questionPool.Physics, 25).map(q => ({ ...q, section: 'Section 1' })),
+                    ...getRandomQuestions(questionPool.Chemistry, 25).map(q => ({ ...q, section: 'Section 1' })),
+                    ...getRandomQuestions(questionPool.ICT, 5).map(q => ({ ...q, section: 'Section 1' }))
+                );
+
+                // Section 2/3/4: User-selected
+                if (selectedSection === 'math') {
+                    selectedQuestions.push(
+                        ...getRandomQuestions(questionPool.Math, 25).map(q => ({ ...q, section: 'Section 2' }))
+                    );
+                } else if (selectedSection === 'biology') {
+                    selectedQuestions.push(
+                        ...getRandomQuestions(questionPool.Biology, 25).map(q => ({ ...q, section: 'Section 3' }))
+                    );
+                } else if (selectedSection === 'math+biology') {
+                    selectedQuestions.push(
+                        ...getRandomQuestions(questionPool.Biology, 13).map(q => ({ ...q, section: 'Section 4' })),
+                        ...getRandomQuestions(questionPool.Math, 12).map(q => ({ ...q, section: 'Section 4' }))
+                    );
+                }
+
+                // Shuffle and sort questions
+                selectedQuestions = getRandomQuestions(selectedQuestions, selectedQuestions.length);
+                selectedQuestions.sort((a, b) => {
+                    if (a.section !== b.section) return a.section.localeCompare(b.section);
+                    return a.subject.localeCompare(b.subject);
+                });
+
+                // Render questions
+                let currentSection = null;
+                selectedQuestions.forEach((question, index) => {
+                    if (question.section !== currentSection) {
+                        currentSection = question.section;
+                        const divider = document.createElement('div');
+                        divider.className = 'section-divider';
+                        divider.innerHTML = `<h2>${currentSection}</h2>`;
+                        questionsContainer.appendChild(divider);
+                    }
+                    questionsContainer.appendChild(createQuestionCard(question, index));
+                });
+
+                // Update UI
+                document.getElementById('section-selection').style.display = 'none';
+                document.getElementById('status-bar').style.display = 'flex';
+                document.getElementById('generated-exam-container').style.display = 'block';
+
+                startTimer();
+                examGenerated = true;
+
+                // Process MathJax after rendering
+                if (window.MathJax) {
+                    MathJax.typesetPromise().catch(err => console.log('MathJax typeset error:', err));
+                }
+            } catch (error) {
+                console.error('Error generating exam:', error);
+                alert('An error occurred while generating the exam. Please try again.');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Exam';
+            }
+        }, 100);
     }
-
-    // ---- Optional: Shuffle final question list ----
-    selectedQuestions = getRandomQuestions(selectedQuestions, selectedQuestions.length);
-
-    // ---- Sort by section and subject for organized rendering ----
-    selectedQuestions.sort((a, b) => {
-        if (a.section !== b.section) {
-            return a.section.localeCompare(b.section);
-        }
-        return a.subject.localeCompare(b.subject);
-    });
-
-    // ---- Render questions ----
-    let currentSection = null;
-    selectedQuestions.forEach((question, index) => {
-        if (question.section !== currentSection) {
-            currentSection = question.section;
-            const divider = document.createElement('div');
-            divider.className = 'section-divider';
-            divider.innerHTML = `<h2>${currentSection}</h2>`;
-            questionsContainer.appendChild(divider);
-        }
-
-        const questionCard = createQuestionCard(question, index);
-        questionsContainer.appendChild(questionCard);
-    });
-
-    // ---- Update UI ----
-    document.getElementById('section-selection').style.display = 'none';
-    document.getElementById('status-bar').style.display = 'flex';
-    document.getElementById('generated-exam-container').style.display = 'block';
-
-    startTimer();
-    examGenerated = true;
-
-    if (window.MathJax) {
-        MathJax.typeset();
-    }
-}
 
         function createQuestionCard(question, index) {
             const questionCard = document.createElement('div');
